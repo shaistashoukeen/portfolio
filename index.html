@@ -1,0 +1,469 @@
+import React, { useState } from "react";
+import { Copy, Download, Check } from "lucide-react";
+
+const htmlCode = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mohammad Shaista Shoukeen | Portfolio</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0a0a1a; color: #fff; -webkit-font-smoothing: antialiased; font-size: 14px; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; justify-content: center; gap: 6px; padding: 12px 20px;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    nav a {
+      color: #9ca3af; text-decoration: none; font-size: 14px;
+      padding: 6px 14px; border-radius: 999px;
+      transition: all 0.2s;
+    }
+    nav a:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 80px 24px 60px; position: relative; overflow: hidden;
+      background: #0a0a1a;
+    }
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none; animation: pulse 4s infinite alternate;
+    }
+    .orb1 { width: 500px; height: 500px; background: rgba(59,130,246,0.18); top: 10%; left: 10%; }
+    .orb2 { width: 400px; height: 400px; background: rgba(139,92,246,0.15); bottom: 10%; right: 10%; animation-delay: 1s; }
+    .orb3 { width: 300px; height: 300px; background: rgba(6,182,212,0.1); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: 2s; }
+    @keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
+    .grid-bg {
+      position: absolute; inset: 0; opacity: 0.03;
+      background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
+      font-size: 14px; color: #d1d5db; margin-bottom: 32px;
+    }
+    .dot-green { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; animation: pulse 1.5s infinite; }
+    h1.hero-title { font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
+    .gradient-text { background: linear-gradient(90deg, #60a5fa, #22d3ee, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-sub { font-size: clamp(1rem, 2vw, 1.2rem); color: #9ca3af; max-width: 600px; margin: 0 auto 40px; line-height: 1.7; }
+    .hero-contacts { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; font-size: 14px; color: #9ca3af; position: relative; z-index: 1; }
+    .hero-contacts a { color: #9ca3af; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .hero-contacts a:hover, .hero-contacts span { color: #fff; }
+    .hero-inner { position: relative; z-index: 1; }
+
+    /* SECTION */
+    section { padding: 96px 24px; }
+    .section-label { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .section-line { height: 1px; width: 60px; }
+    .section-tag { font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600; }
+    .section-title { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700; margin-bottom: 60px; }
+    .section-title span { color: #4b5563; }
+    .max-w { max-width: 900px; margin: 0 auto; }
+
+    /* ABOUT */
+    #about { background: #0b0b1e; }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    @media(max-width:700px){ .about-grid { grid-template-columns: 1fr; } }
+    .about-text p { color: #9ca3af; line-height: 1.8; margin-bottom: 16px; }
+    .card {
+      padding: 24px; border-radius: 16px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.3s; margin-bottom: 16px;
+    }
+    .card:hover { background: rgba(255,255,255,0.05); }
+    .card-icon { padding: 12px; border-radius: 12px; display: inline-flex; margin-bottom: 12px; }
+    .card h3 { color: #fff; font-size: 16px; margin-bottom: 8px; }
+    .card p { color: #9ca3af; font-size: 14px; line-height: 1.7; }
+
+    /* EDUCATION */
+    #education { background: #0a0a1a; }
+    .timeline { position: relative; }
+    .timeline::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, #3b82f6, #8b5cf6, #f59e0b); }
+    .timeline-item { position: relative; padding-left: 72px; margin-bottom: 24px; }
+    .timeline-dot { position: absolute; left: 16px; top: 32px; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #0a0a1a; z-index: 2; }
+    .edu-card { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .edu-institution { display: flex; align-items: center; gap: 8px; color: #fff; font-weight: 600; margin-bottom: 4px; font-size: 16px; }
+    .edu-degree { color: #9ca3af; font-size: 15px; }
+    .badge-score { padding: 6px 16px; border-radius: 999px; color: #fff; font-weight: 700; font-size: 14px; white-space: nowrap; }
+
+    /* SKILLS */
+    #skills { background: #0b0b1e; }
+    .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width:600px){ .skills-grid { grid-template-columns: 1fr; } }
+    .skill-card { padding: 24px; border-radius: 16px; border: 1px solid; }
+    .skill-card h3 { color: #fff; margin-bottom: 20px; font-size: 16px; }
+    .skill-row { margin-bottom: 16px; }
+    .skill-row-header { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
+    .skill-name { color: #d1d5db; font-weight: 500; }
+    .skill-pct { color: #6b7280; }
+    .skill-bar-bg { height: 6px; border-radius: 999px; background: rgba(255,255,255,0.05); overflow: hidden; }
+    .skill-bar { height: 100%; border-radius: 999px; transition: width 1.5s ease; }
+
+    /* PROJECTS */
+    #projects { background: #0a0a1a; }
+    .project-card { padding: 36px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); transition: all 0.3s; margin-bottom: 24px; display: flex; gap: 24px; }
+    .project-card:hover { background: rgba(255,255,255,0.05); }
+    @media(max-width:600px){ .project-card { flex-direction: column; } }
+    .project-icon { padding: 16px; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .project-icon svg { width: 28px; height: 28px; color: #fff; }
+    .project-title { color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .project-sub { color: #9ca3af; font-size: 14px; margin-bottom: 12px; }
+    .project-desc { color: #9ca3af; font-size: 15px; line-height: 1.7; margin-bottom: 16px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 500; background: rgba(255,255,255,0.05); color: #d1d5db; border: 1px solid rgba(255,255,255,0.08); }
+
+    /* CERTIFICATIONS */
+    #certifications { background: #0b0b1e; }
+    .certs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:600px){ .certs-grid { grid-template-columns: 1fr; } }
+    .cert-card { padding: 20px; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); display: flex; align-items: flex-start; gap: 16px; transition: background 0.3s; }
+    .cert-card:hover { background: rgba(255,255,255,0.05); }
+    .cert-icon { padding: 10px; border-radius: 10px; flex-shrink: 0; }
+    .cert-title { color: #fff; font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .cert-issuer { color: #6b7280; font-size: 13px; }
+
+    /* PUBLICATIONS */
+    #publications { background: #0a0a1a; }
+    .pub-card { padding: 36px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); transition: all 0.3s; }
+    .pub-card:hover { background: rgba(255,255,255,0.05); }
+    .pub-inner { display: flex; gap: 20px; align-items: flex-start; }
+    .pub-title { color: #fff; font-size: 18px; font-weight: 600; margin-bottom: 8px; line-height: 1.4; }
+    .pub-journal { color: #9ca3af; font-size: 14px; margin-bottom: 16px; }
+    .pub-journal span { color: #d1d5db; }
+
+    /* INTERNSHIPS */
+    #internships { background: #0b0b1e; }
+    .intern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width:600px){ .intern-grid { grid-template-columns: 1fr; } }
+    .intern-card { padding: 32px; border-radius: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); transition: all 0.3s; position: relative; overflow: hidden; }
+    .intern-card:hover { background: rgba(255,255,255,0.05); }
+    .intern-accent { position: absolute; top: 0; left: 0; right: 0; height: 2px; opacity: 0; transition: opacity 0.3s; }
+    .intern-card:hover .intern-accent { opacity: 1; }
+    .intern-icon { padding: 12px; border-radius: 12px; display: inline-flex; margin-bottom: 20px; }
+    .intern-company { color: #6b7280; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+    .intern-role { color: #fff; font-size: 17px; font-weight: 600; margin-bottom: 12px; }
+    .intern-desc { color: #9ca3af; font-size: 14px; line-height: 1.7; }
+
+    /* CONTACT */
+    #contact { background: #0a0a1a; }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    @media(max-width:700px){ .contact-grid { grid-template-columns: 1fr; } }
+    .contact-card { padding: 28px; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); text-align: center; transition: all 0.3s; text-decoration: none; display: block; }
+    .contact-card:hover { background: rgba(255,255,255,0.06); }
+    .contact-icon { padding: 16px; border-radius: 16px; display: inline-flex; margin-bottom: 16px; transition: transform 0.3s; }
+    .contact-card:hover .contact-icon { transform: scale(1.1); }
+    .contact-label { color: #fff; font-weight: 600; margin-bottom: 6px; }
+    .contact-val { color: #6b7280; font-size: 14px; word-break: break-all; }
+    footer { text-align: center; padding: 32px; border-top: 1px solid rgba(255,255,255,0.06); color: #4b5563; font-size: 14px; }
+
+    /* ANIMATIONS */
+    .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade-in.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="#about">About</a>
+  <a href="#education">Education</a>
+  <a href="#skills">Skills</a>
+  <a href="#projects">Projects</a>
+  <a href="#certifications">Certifications</a>
+  <a href="#publications">Publications</a>
+  <a href="#internships">Experience</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="grid-bg"></div>
+  <div class="hero-inner">
+    <div class="badge"><span class="dot-green"></span> Available for opportunities</div>
+    <h1 class="hero-title">
+      <span style="color:#fff">Mohammad</span><br>
+      <span class="gradient-text">Shaista Shoukeen</span>
+    </h1>
+    <p class="hero-sub">Full-Stack Developer &amp; AI Enthusiast crafting innovative digital experiences with a passion for technology and problem-solving.</p>
+    <div class="hero-contacts">
+      <span>📍 Vijayawada, India</span>
+      <a href="tel:+916302462892">📞 +91 6302462892</a>
+      <a href="mailto:shaistashoukeen78@gmail.com">✉️ shaistashoukeen78@gmail.com</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="max-w fade-in">
+    <div class="section-label">
+      <div class="section-line" style="background:linear-gradient(to right,#3b82f6,transparent)"></div>
+      <span class="section-tag" style="color:#60a5fa">About Me</span>
+    </div>
+    <div class="section-title">Driven by curiosity,<br><span>powered by code.</span></div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I'm a B.Tech Information Technology student at Prasad V Potluri Siddhartha Institute of Technology, passionate about building meaningful digital solutions. My journey spans from AI-powered platforms to responsive web applications, always with a focus on real-world impact.</p>
+        <p>I believe in the power of technology to transform lives, and I'm constantly exploring new ways to bridge the gap between innovation and practical application.</p>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-icon" style="background:rgba(59,130,246,0.1)">🎯</div>
+          <h3>My Objective</h3>
+          <p>To seek a challenging, people-oriented career that allows me to fully explore my potential, leveraging technical knowledge to contribute to organizational growth.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background:rgba(139,92,246,0.1)">✨</div>
+          <h3>What Drives Me</h3>
+          <p>A relentless curiosity for AI, data science, and full-stack development, combined with a desire to create technology that makes a real difference.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="max-w fade-in">
+    <div class="section-label">
+      <div class="section-line" style="background:linear-gradient(to right,#8b5cf6,transparent)"></div>
+      <span class="section-tag" style="color:#a78bfa">Education</span>
+    </div>
+    <div class="section-title">Academic <span>Journey</span></div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#3b82f6"></div>
+        <div class="card edu-card">
+          <div>
+            <div class="edu-institution">🎓 Prasad V Potluri Siddhartha Institute Of Technology</div>
+            <div class="edu-degree">B.Tech — Information Technology</div>
+          </div>
+          <div class="badge-score" style="background:linear-gradient(90deg,#3b82f6,#22d3ee)">8.4 CGPA</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#8b5cf6"></div>
+        <div class="card edu-card">
+          <div>
+            <div class="edu-institution">🎓 Sri Durga Malleswara Siddhartha Mahila Kalasala</div>
+            <div class="edu-degree">12th / Intermediate — MPC</div>
+          </div>
+          <div class="badge-score" style="background:linear-gradient(90deg,#8b5cf6,#ec4899)">94.3%</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:#f59e0b"></div>
+        <div class="card edu-card">
+          <div>
+            <div class="edu-institution">🎓 Darasgh E Islami High School (EM)</div>
+            <div class="edu-degree">10th / Secondary Education</div>
+          </div>
+          <div class="badge-score" style="background:linear-gradient(90deg,#f59e0b,#f97316)">99.7%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="max-w fade-in">
+    <div class="section-label">
+      <div class="section-line" style="background:linear-gradient(to right,#06b6d4,transparent)"></div>
+      <span class="section-tag" style="color:#22d3ee">Skills</span>
+    </div>
+    <div class="section-title">Technical <span>Expertise</span></div>
+    <div class="skills-grid">
+      <div class="skill-card" style="background:rgba(59,130,246,0.05);border-color:rgba(59,130,246,0.2)">
+        <h3>Languages</h3>
+        <div class="skill-row"><div class="skill-row-header"><span class="skill-name">C</span><span class="skill-pct">80%</span></div><div class="skill-bar-bg"><div class="skill-bar" data-width="80" style="background:linear-gradient(90deg,#3b82f6,#22d3ee);width:0"></div></div></div>
+        <div class="skill-row"><div class="skill-row-header"><span class="skill-name">Java</span><span class="skill-pct">85%</span></div><div class="skill-bar-bg"><div class="skill-bar" data-width="85" style="background:linear-gradient(90deg,#3b82f6,#22d3ee);width:0"></div></div></div>
+        <div class="skill-row"><div class="skill-row-header"><span class="skill-name">Python</span><span class="skill-pct">85%</span></div><div class="skill-bar-bg"><div class="skill-bar" data-width="85" style="background:linear-gradient(90deg,#3b82f6,#22d3ee);width:0"></div></div></div>
+      </div>
+      <div class="skill-card" style="background:rgba(139,92,246,0.05);border-color:rgba(139,92,246,0.2)">
+        <h3>Frontend</h3>
+        <div class="skill-row"><div class="skill-row-header"><span class="skill-name">HTML5</span><span class="skill-pct">95%</span></div><div class="skill-bar-bg"><div class="skill-bar" data-width="95" style="background:linear-gradient(90deg,#8b5cf6,#ec4899);width:0"></div></div></div>
+        <div class="skill-row"><div class="skill-row-header"><span class="skill-name">CSS3</span><span class="skill-pct">90%</span></div><div class="skill-bar-bg"><div class="skill-bar" data-width="90" style="background:linear-gradient(90deg,#8b5cf6,#ec4899);width:0"></div></div></div>
+        <div class="skill-row"><div class="skill-row-header"><span class="skill-name">JavaScript</span><span class="skill-pct">85%</span></div><div class="skill-bar-bg"><div class="skill-bar" data-width="85" style="background:linear-gradient(90deg,#8b5cf6,#ec4899);width:0"></div></div></div>
+        <div class="skill-row"><div class="skill-row-header"><span class="skill-name">React.js</span><span class="skill-pct">80%</span></div><div class="skill-bar-bg"><div class="skill-bar" data-width="80" style="background:linear-gradient(90deg,#8b5cf6,#ec4899);width:0"></div></div></div>
+      </div>
+      <div class="skill-card" style="background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.2)">
+        <h3>Databases</h3>
+        <div class="skill-row"><div class="skill-row-header"><span class="skill-name">MySQL</span><span class="skill-pct">80%</span></div><div class="skill-bar-bg"><div class="skill-bar" data-width="80" style="background:linear-gradient(90deg,#10b981,#14b8a6);width:0"></div></div></div>
+        <div class="skill-row"><div class="skill-row-header"><span class="skill-name">MongoDB</span><span class="skill-pct">75%</span></div><div class="skill-bar-bg"><div class="skill-bar" data-width="75" style="background:linear-gradient(90deg,#10b981,#14b8a6);width:0"></div></div></div>
+      </div>
+      <div class="skill-card" style="background:rgba(245,158,11,0.05);border-color:rgba(245,158,11,0.2)">
+        <h3>Data & Tools</h3>
+        <div class="skill-row"><div class="skill-row-header"><span class="skill-name">Tableau</span><span class="skill-pct">85%</span></div><div class="skill-bar-bg"><div class="skill-bar" data-width="85" style="background:linear-gradient(90deg,#f59e0b,#f97316);width:0"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="max-w fade-in">
+    <div class="section-label">
+      <div class="section-line" style="background:linear-gradient(to right,#10b981,transparent)"></div>
+      <span class="section-tag" style="color:#34d399">Projects</span>
+    </div>
+    <div class="section-title">Featured <span>Work</span></div>
+    <div class="project-card">
+      <div class="project-icon" style="background:linear-gradient(135deg,#2563eb,#06b6d4)">🧠</div>
+      <div>
+        <div class="project-title">Nexora</div>
+        <div class="project-sub">AI-Powered Smart Kitchen &amp; Food Redistribution Platform</div>
+        <div class="project-desc">Developed an AI- and IoT-based smart kitchen system to monitor food freshness, reduce spoilage, and enable surplus food redistribution through NGO connectivity.</div>
+        <div class="tags"><span class="tag">AI</span><span class="tag">IoT</span><span class="tag">Python</span><span class="tag">Machine Learning</span><span class="tag">NGO Integration</span></div>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-icon" style="background:linear-gradient(135deg,#7c3aed,#db2777)">🌐</div>
+      <div>
+        <div class="project-title">QuickBook</div>
+        <div class="project-sub">Online Booking Platform</div>
+        <div class="project-desc">Developed a real-time online booking platform using JavaScript (ES6+), implementing form validation, event handling, and local JSON data storage. Designed a mobile-responsive UI using CSS Flexbox and Box Model for cross-browser compatibility.</div>
+        <div class="tags"><span class="tag">JavaScript</span><span class="tag">ES6+</span><span class="tag">CSS Flexbox</span><span class="tag">Responsive Design</span><span class="tag">JSON</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <div class="max-w fade-in">
+    <div class="section-label">
+      <div class="section-line" style="background:linear-gradient(to right,#f59e0b,transparent)"></div>
+      <span class="section-tag" style="color:#fbbf24">Certifications</span>
+    </div>
+    <div class="section-title">Credentials &amp; <span>Achievements</span></div>
+    <div class="certs-grid">
+      <div class="cert-card">
+        <div class="cert-icon" style="background:rgba(59,130,246,0.1)">💻</div>
+        <div><div class="cert-title">C, Python, Java, React, HTML, CSS &amp; JS</div><div class="cert-issuer">Infosys Collaboration</div></div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon" style="background:rgba(16,185,129,0.1)">📊</div>
+        <div><div class="cert-title">Data Visualization with Tableau</div><div class="cert-issuer">Certified Training with Project Work</div></div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon" style="background:rgba(139,92,246,0.1)">🌐</div>
+        <div><div class="cert-title">Modern Web Development &amp; Deployment</div><div class="cert-issuer">CSI Chapter Workshop</div></div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon" style="background:rgba(245,158,11,0.1)">🏆</div>
+        <div><div class="cert-title">Fundamentals of Artificial Intelligence</div><div class="cert-issuer">NPTEL — IIT Guwahati</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="publications">
+  <div class="max-w fade-in">
+    <div class="section-label">
+      <div class="section-line" style="background:linear-gradient(to right,#f43f5e,transparent)"></div>
+      <span class="section-tag" style="color:#fb7185">Publications</span>
+    </div>
+    <div class="section-title">Research <span>Work</span></div>
+    <div class="pub-card">
+      <div class="pub-inner">
+        <div style="padding:16px;border-radius:16px;background:rgba(244,63,94,0.1);flex-shrink:0;font-size:24px">📄</div>
+        <div>
+          <div class="pub-title">"A Tableau Tool for Climate Changes and Environmental Impact"</div>
+          <div class="pub-journal">Published in <span>International Journal of Advanced Research in Science, Communication and Technology (IJARSCT)</span></div>
+          <div class="tags"><span class="tag" style="background:rgba(244,63,94,0.1);color:#fda4af;border-color:rgba(244,63,94,0.2)">2025</span><span class="tag">Collaboration with IJARSCT</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INTERNSHIPS -->
+<section id="internships">
+  <div class="max-w fade-in">
+    <div class="section-label">
+      <div class="section-line" style="background:linear-gradient(to right,#14b8a6,transparent)"></div>
+      <span class="section-tag" style="color:#2dd4bf">Experience</span>
+    </div>
+    <div class="section-title">Internships &amp; <span>Training</span></div>
+    <div class="intern-grid">
+      <div class="intern-card">
+        <div class="intern-accent" style="background:linear-gradient(90deg,#06b6d4,#3b82f6)"></div>
+        <div class="intern-icon" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)">🧠</div>
+        <div class="intern-company">💼 Practical Training</div>
+        <div class="intern-role">AI &amp; Data Science Intern</div>
+        <div class="intern-desc">Gained strong analytical and problem-solving skills with fast learning ability in artificial intelligence and data science domains.</div>
+      </div>
+      <div class="intern-card">
+        <div class="intern-accent" style="background:linear-gradient(90deg,#8b5cf6,#ec4899)"></div>
+        <div class="intern-icon" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">💻</div>
+        <div class="intern-company">💼 Vault of Codes</div>
+        <div class="intern-role">Web Development Intern</div>
+        <div class="intern-desc">Contributed to responsive website development using HTML, CSS, and JavaScript, building production-ready web interfaces.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="max-w fade-in">
+    <div class="section-label">
+      <div class="section-line" style="background:linear-gradient(to right,#3b82f6,transparent)"></div>
+      <span class="section-tag" style="color:#60a5fa">Contact</span>
+    </div>
+    <div class="section-title">Let's <span>Connect</span></div>
+    <div class="contact-grid">
+      <a href="mailto:shaistashoukeen78@gmail.com" class="contact-card">
+        <div class="contact-icon" style="background:rgba(59,130,246,0.1)">✉️</div>
+        <div class="contact-label">Email</div>
+        <div class="contact-val">shaistashoukeen78@gmail.com</div>
+      </a>
+      <a href="tel:+916302462892" class="contact-card">
+        <div class="contact-icon" style="background:rgba(6,182,212,0.1)">📞</div>
+        <div class="contact-label">Phone</div>
+        <div class="contact-val">+91 6302462892</div>
+      </a>
+      <div class="contact-card">
+        <div class="contact-icon" style="background:rgba(139,92,246,0.1)">📍</div>
+        <div class="contact-label">Location</div>
+        <div class="contact-val">Vijayawada, India</div>
+      </div>
+    </div>
+  </div>
+  <footer>© 2025 Mohammad Shaista Shoukeen. Crafted with passion.</footer>
+</section>
+
+<script>
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Skill bar animation
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) {
+        entry.target.querySelectorAll('.skill-bar').forEach(bar => {
+          bar.style.width = bar.dataset.width + '%';
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.skills-grid').forEach(el => barObserver.observe(el));
+</script>
+</body>
+</html>`;
+
