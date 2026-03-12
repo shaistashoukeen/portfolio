@@ -1,3 +1,6 @@
 #Project Overview
 
-This project is a Personal Portfolio Website developed using HTML, CSS, and JavaScript. The website presents personal, academic, and professional information in a modern and responsive layout. It serves as an online profile to showcase technical skills, projects, certifications, and internship experience.
+This project is a Personal Portfolio Website developed to showcase my skills, projects, and professional information.
+The website provides a simple and clean interface where visitors can learn about my background, explore my work, and contact me.
+
+The project also demonstrates the use of Git and GitHub for version control and repository management, ensuring proper tracking of changes and efficient project organization.
